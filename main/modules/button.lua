@@ -1,14 +1,19 @@
 local function general_init(self)
 	self.buttons = {}
-	self.mouse_hovering_on_buttons = false
-	self.current_hovering_button = nil
-	self.previous_button_color = nil
+	self.buttons_metadata = {}
+	-- button states: NORMAL HOVER PRESSED
+	self.cursor_is_hand = false
+	self.mouse_down = false
 end
+
+local hover_color = vmath.vector4(0.7, 0.7, 0.7, 1)
+local pressed_color = vmath.vector4(0.3, 0.3, 0.3, 1)
 
 function buttons_init(self, ids)
 	general_init(self)
 	for _, button_id in pairs(ids) do
 		self.buttons[button_id] = gui.get_node(button_id .. "/button")
+		self.buttons_metadata[button_id] = {state = "NORMAL", default_color = gui.get_color(self.buttons[button_id])}
 	end
 end
 
@@ -19,44 +24,48 @@ function buttons_init_clone(self, proto_id, number_of_buttons, position_fn, text
 		local new_nodes = gui.clone_tree(button_proto)
 		gui.set_position(new_nodes[hash(proto_id .. "/button")], position_fn(i))
 		gui.set_text(new_nodes[hash(proto_id .."/text")], text_fn(i))
-		table.insert(self.buttons, new_nodes[hash(proto_id .. "/button")])
+		self.buttons[i] = new_nodes[hash(proto_id .. "/button")]
+		self.buttons_metadata[i] = {state = "NORMAL", default_color = gui.get_color(self.buttons[i])}
 	end
 end
 
 function buttons_on_input(self, action_id, action, click_fn)
-	local is_mouse_inside = false
-	local button_inside_mouse = nil
+	
+	if action_id == hash("LEFT_CLICK") and action.released then
+		self.mouse_down = false
+	end
+	if action_id == hash("LEFT_CLICK") and action.pressed then
+		self.mouse_down = true
+	end
+	
+
+	local hovering = false
 	for key, val in pairs(self.buttons) do
-		if(gui.pick_node(val, action.x, action.y)) then
-			is_mouse_inside = true
-			button_inside_mouse = key
-			break
+		local new_state = "NORMAL"
+		if gui.pick_node(val, action.x, action.y) then
+			-- mouse is inside this button
+			hovering = true
+			new_state = self.mouse_down and "PRESSED" or "HOVER"
+			if action_id == hash("LEFT_CLICK") then
+				if action.released == true then
+					click_fn(key)
+				end
+			end
+		end
+
+		if new_state ~= self.buttons_metadata[key].state then
+			self.buttons_metadata[key].state = new_state
+			local new_color = ({
+				NORMAL = self.buttons_metadata[key].default_color,
+				HOVER = hover_color,
+				PRESSED = pressed_color,
+			})[new_state]
+			gui.set_color(val, new_color)
 		end
 	end
 
-	if(action_id == hash("LEFT_CLICK") and action.released == true) then
-		if is_mouse_inside then
-			click_fn(button_inside_mouse)
-		end
-	end
-
-	if action_id == nil then
-		if is_mouse_inside then
-			if not self.mouse_hovering_on_buttons then
-				self.mouse_hovering_on_buttons = true
-				self.current_hovering_button = button_inside_mouse
-				self.previous_button_color = gui.get_color(self.buttons[self.current_hovering_button])
-				gui.set_color(self.buttons[self.current_hovering_button], vmath.vector4(0.7, 0.7, 0.7, 1))
-				defos.set_cursor(defos.CURSOR_HAND)
-			end
-		else
-			if self.mouse_hovering_on_buttons then
-				self.mouse_hovering_on_buttons = false
-				gui.set_color(self.buttons[self.current_hovering_button], self.previous_button_color)
-				self.current_hovering_button = nil
-				self.previous_button_color = nil
-				defos.reset_cursor()
-			end
-		end
+	if hovering ~= self.cursor_is_hand then
+		defos.set_cursor(hovering and defos.CURSOR_HAND or nil)
+		self.cursor_is_hand = hovering
 	end
 end
