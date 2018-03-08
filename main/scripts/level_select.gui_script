@@ -1,9 +1,14 @@
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	self.button_ids = {"new_game_button", "load_game_button"}
+	local button_proto = gui.get_node("button_proto/button")
 	self.buttons = {}
-	for _, button_id in pairs(self.button_ids) do
-		self.buttons[button_id] = gui.get_node(button_id .. "/button")
+	for i = 1, 5, 1 do
+		local new_nodes = gui.clone_tree(button_proto)
+		local x = nil
+		local y = i
+		gui.set_position(new_nodes[hash("button_proto/button")], vmath.vector3(300, 700 - (110 * y), 0))
+		gui.set_text(new_nodes[hash("button_proto/text")], "Level " .. i)
+		table.insert(self.buttons, new_nodes[hash("button_proto/button")])
 	end
 	self.mouse_hovering = false
 end
