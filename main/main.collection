@@ -3,8 +3,8 @@ scale_along_z: 0
 embedded_instances {
   id: "start_game"
   data: "components {\n"
-  "  id: \"my_gui\"\n"
-  "  component: \"/main/gui/my_gui.gui\"\n"
+  "  id: \"main_menu\"\n"
+  "  component: \"/main/gui/main menu.gui\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
