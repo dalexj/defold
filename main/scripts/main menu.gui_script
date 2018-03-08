@@ -11,7 +11,7 @@ function on_input(self, action_id, action)
 	if(action_id == hash("LEFT_CLICK") and action.released == true) then
 		local box = gui.get_node("box")
 		local message_text = gui.get_node("message_text")
-		gui.set_text(message_text, (gui.pick_node(box, action.x, action.y) and "clicked" or "not clicked"))
+		gui.set_text(message_text, (gui.pick_node(box, action.x, action.y) and "clicked hi scene" or "not clicked"))
 	end
 end
 
