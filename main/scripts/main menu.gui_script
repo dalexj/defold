@@ -1,41 +1,10 @@
+require "main.modules.button"
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	self.button_ids = {"new_game_button", "load_game_button"}
-	self.buttons = {}
-	for _, button_id in pairs(self.button_ids) do
-		self.buttons[button_id] = gui.get_node(button_id .. "/button")
-	end
-	self.mouse_hovering = false
+	buttons_init(self, {"new_game_button", "load_game_button"})
 end
 
 function on_input(self, action_id, action)
-	local is_mouse_inside = false
-	local button_inside_mouse = nil
-	for key, val in pairs(self.buttons) do
-		if(gui.pick_node(val, action.x, action.y)) then
-			is_mouse_inside = true
-			button_inside_mouse = key
-			break
-		end
-	end
-
-	if(action_id == hash("LEFT_CLICK") and action.released == true) then
-		if is_mouse_inside then
-			msg.post("something", button_inside_mouse)
-		end
-	end
-
-	if action_id == nil then
-		if is_mouse_inside then
-			if not self.mouse_hovering then
-				self.mouse_hovering = true
-				defos.set_cursor(defos.CURSOR_HAND)
-			end
-		else
-			if self.mouse_hovering then
-				self.mouse_hovering = false
-				defos.reset_cursor()
-			end
-		end
-	end
+	buttons_on_input(self, action_id, action, function(key) msg.post("something", key) end)
 end
