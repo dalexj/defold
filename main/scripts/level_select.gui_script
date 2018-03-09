@@ -9,5 +9,5 @@ function init(self)
 end
 
 function on_input(self, action_id, action)
-	buttons_on_input(self, action_id, action, function(key) msg.post("something", "clicked on mouse_hovering_on_buttonslevel '" .. key .. "'") end)
+	buttons_on_input(self, action_id, action, function(key) msg.post("something", "clicked on level '" .. key .. "'") end)
 end
