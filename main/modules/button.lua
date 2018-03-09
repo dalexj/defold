@@ -27,6 +27,7 @@ function buttons_init_clone(self, proto_id, number_of_buttons, position_fn, text
 		self.buttons[i] = new_nodes[hash(proto_id .. "/button")]
 		self.buttons_metadata[i] = {state = "NORMAL", default_color = gui.get_color(self.buttons[i])}
 	end
+	gui.set_enabled(button_proto, false)
 end
 
 function buttons_on_input(self, action_id, action, click_fn)
