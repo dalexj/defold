@@ -1,10 +1,10 @@
 name: "main"
 scale_along_z: 0
 embedded_instances {
-  id: "main_menu"
+  id: "screens"
   data: "components {\n"
-  "  id: \"main_menu\"\n"
-  "  component: \"/main/gui/main menu.gui\"\n"
+  "  id: \"main\"\n"
+  "  component: \"/main/scripts/main.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -17,29 +17,30 @@ embedded_instances {
   "    w: 1.0\n"
   "  }\n"
   "}\n"
-  ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-embedded_instances {
-  id: "level_select"
-  data: "components {\n"
-  "  id: \"level_select\"\n"
-  "  component: \"/main/gui/level_select.gui\"\n"
+  "embedded_components {\n"
+  "  id: \"level_select_proxy\"\n"
+  "  type: \"collectionproxy\"\n"
+  "  data: \"collection: \\\"/main/screens/level_select.collection\\\"\\n"
+  "exclude: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"main_menu_proxy\"\n"
+  "  type: \"collectionproxy\"\n"
+  "  data: \"collection: \\\"/main/screens/main_menu.collection\\\"\\n"
+  "exclude: false\\n"
+  "\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
