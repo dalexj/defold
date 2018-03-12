@@ -13,5 +13,5 @@ function final(self)
 end
 
 function on_input(self, action_id, action)
-	buttons_on_input(self, action_id, action, function(key) msg.post("main:/screens", "show_main_menu") end)
+	buttons_on_input(self, action_id, action, function(key) msg.post("main:/screens", "show_ingame") end)
 end

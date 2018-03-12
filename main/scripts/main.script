@@ -1,6 +1,21 @@
+local screens = {"main_menu", "level_select", "ingame"}
+
+local function screen_id_from(screen_name)
+	return "#" .. screen_name .. "_proxy"
+end
+
+local function load_screen(self, screen_name)
+	if self.loaded_proxy == screen_name then return end
+	if self.loaded_proxy then
+		msg.post(screen_id_from(self.loaded_proxy), "unload")
+	end
+	msg.post(screen_id_from(screen_name), "load")
+	self.loaded_proxy = screen_name
+end
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	msg.post("#main_menu_proxy", "load")
+	load_screen(self, "main_menu")
 end
 
 function final(self)
@@ -8,13 +23,12 @@ function final(self)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("show_level_select") then
-		msg.post("#level_select_proxy", "load")
-		msg.post("#main_menu_proxy", "unload")		
-	elseif message_id == hash("show_main_menu") then
-		msg.post("#main_menu_proxy", "load")
-		msg.post("#level_select_proxy", "unload")		
-	elseif message_id == hash("proxy_loaded") then
+	for _, screen_name in pairs(screens) do
+		if message_id == hash("show_" .. screen_name) then
+			load_screen(self, screen_name)
+		end
+	end	
+	if message_id == hash("proxy_loaded") then
 		print("proxy_loaded", sender)
 		msg.post(sender, "enable")
 	elseif message_id == hash("proxy_unloaded") then
