@@ -4,6 +4,7 @@ local function reset_selected(self)
 	if self.selected_index then
 		gui.set_color(self.buttons[self.selected_index], self.default_button_color)
 		self.buttons_metadata[self.selected_index].default_color = self.default_button_color
+		self.selected_index = nil
 	end
 end
 
@@ -62,10 +63,12 @@ end
 function on_input(self, action_id, action)
 	local function on_click(key)
 		if key == "next_page" then
+			reset_selected(self)
 			self.page =  self.page + 1
 			update_page_buttons(self)
 			print("clicked (next page). page now " .. self.page)
 		elseif key == "prev_page" then
+			reset_selected(self)
 			self.page =  self.page - 1
 			update_page_buttons(self)
 			print("clicked (prev page). page now " .. self.page)
