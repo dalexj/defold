@@ -82,7 +82,7 @@ nodes {
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
   texture: ""
-  id: "new_game_button/button"
+  id: "new_game_button/bg"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
@@ -157,7 +157,7 @@ nodes {
   }
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
-  parent: "new_game_button/button"
+  parent: "new_game_button/bg"
   layer: ""
   inherit_alpha: true
   alpha: 1.0
@@ -241,7 +241,7 @@ nodes {
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
   texture: ""
-  id: "load_game_button/button"
+  id: "load_game_button/bg"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
@@ -315,7 +315,7 @@ nodes {
   }
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
-  parent: "load_game_button/button"
+  parent: "load_game_button/bg"
   layer: ""
   inherit_alpha: true
   alpha: 1.0

@@ -15,7 +15,8 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	load_screen(self, "main_menu")
+	--load_screen(self, "main_menu")
+	load_screen(self, "ingame")
 end
 
 function final(self)
