@@ -1,0 +1,41 @@
+require "main.modules.tilemap"
+
+local TILE_SIZE = 40
+local TILEMAP_URL = "/board#board"
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	-- Add initialization code here
+	-- Remove this function if not needed
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Remove this function if not needed
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("LEFT_CLICK") and action.released then
+		local tile = get_tile_within_coords(TILEMAP_URL, TILE_SIZE, action)
+		if tile then
+			print("tile clicked at (" .. tile.x .. "," .. tile.y .. ") with tile (" .. tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y) .. ")")
+		else
+			print("tilemap not clicked")
+		end
+	end
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end
