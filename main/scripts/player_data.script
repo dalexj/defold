@@ -1,9 +1,20 @@
 function init(self)
-	self.some_var = "from the data script"
+	self.player_data = {}
+	self.player_data.owned_units = {
+		["hack"] = 1,
+		["battery"] = 3,
+		["hammer"] = 4,
+		["hammer_2"] = 3,
+		["man"] = 2,
+		["tower"] = 1,
+		["slower"] = 1,
+		["doc"] = 4,
+		["doc_2"] = 1,
+	}
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("get_value") then
-		msg.post(sender, "get_value", { value =  self[message.name]})
+	if message_id == hash("get_player_data") then
+		msg.post(sender, "get_player_data", self.player_data)
 	end
 end

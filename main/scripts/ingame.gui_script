@@ -9,14 +9,15 @@ local function reset_selected(self)
 end
 
 local function update_page_buttons(self)
-	local number_of_pages = math.ceil(#self.unit_names/5)
+	local number_of_pages = math.ceil(#self.sorted_unit_names/5)
 	for i = 1, 5 do
 		local text_node = gui.get_node("unit_select_" .. i .. "/text")
-		if (self.page * 5 + i) > #self.unit_names then
+		if (self.page * 5 + i) > #self.sorted_unit_names then
 			gui.set_enabled(gui.get_node("unit_select_" .. i .. "/bg"), false)
 		else
 			gui.set_enabled(gui.get_node("unit_select_" .. i .. "/bg"), true)
-			gui.set_text(text_node, self.unit_names[(self.page * 5) + i] .. "  x1")
+			local unit_name = self.sorted_unit_names[(self.page * 5) + i]
+			gui.set_text(text_node, unit_name .. "  x" .. self.owned_units[unit_name])
 		end
 	end
 	gui.set_enabled(self.buttons.prev_page, self.page ~= 0)
@@ -25,17 +26,6 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	self.unit_names = {
-		"hack",
-		"battery",
-		"hammer",
-		"hammer_2",
-		"man",
-		"tower",
-		"slower",
-		"doc",
-		"doc_2",
-	}
 	
 	local button_names = {}
 	for i = 1, 5 do
@@ -53,11 +43,27 @@ function init(self)
 	self.buttons_metadata.next_page = {skip_effects = true}
 	self.buttons.prev_page = gui.get_node("prev_page")
 	self.buttons_metadata.prev_page = {skip_effects = true}
+
+	self.sorted_unit_names = {}
+	self.owned_units = {}
 	update_page_buttons(self)
+	msg.post("main:/state", "get_player_data")
 end
 
 function final(self)
 	msg.post(".", "release_input_focus")
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("get_player_data") then
+		self.sorted_unit_names = {}
+		self.owned_units = message.owned_units
+		for unit_name, _ in pairs(self.owned_units) do
+			table.insert(self.sorted_unit_names, unit_name)
+		end
+		table.sort(self.sorted_unit_names)
+		update_page_buttons(self)
+	end
 end
 
 function on_input(self, action_id, action)
@@ -82,5 +88,4 @@ function on_input(self, action_id, action)
 	end
 
 	buttons_on_input(self, action_id, action, on_click)
-	
 end

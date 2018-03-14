@@ -17,7 +17,6 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 	--load_screen(self, "main_menu")
 	load_screen(self, "ingame")
-	msg.post("/state", "get_value", { name = "some_var" })
 end
 
 function final(self)
@@ -35,9 +34,5 @@ function on_message(self, message_id, message, sender)
 		msg.post(sender, "enable")
 	elseif message_id == hash("proxy_unloaded") then
 		print("proxy_unloaded", sender)
-	end
-
-	if message_id == hash("get_value") then
-		print("got the value", message.value)
 	end
 end
