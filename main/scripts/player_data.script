@@ -1,0 +1,9 @@
+function init(self)
+	self.some_var = "from the data script"
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("get_value") then
+		msg.post(sender, "get_value", { value =  self[message.name]})
+	end
+end
