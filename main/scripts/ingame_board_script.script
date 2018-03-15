@@ -5,8 +5,31 @@ require "main.modules.ingame_state"
 local TILE_SIZE = 40
 local TILEMAP_URL = "/board#board"
 
+local unit_id_to_tile_index = {
+	hack = 3,
+	battery = 4,
+	man = 5,
+	doc = 6,
+}
+
+local function table_contains(table, element)
+	for _, v in pairs(table) do
+		if v.x == element.x and v.y == element.y then return true end
+	end
+	return false
+end
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
+	self.placement_spots = {}
+	local _, _, width, height = tilemap.get_bounds(TILEMAP_URL)
+	for i = 1, width do
+		for j = 1, height do
+			if tilemap.get_tile(TILEMAP_URL, "board", i, j) == 2 then
+				table.insert(self.placement_spots, { x = i, y = j })
+			end
+		end
+	end
 end
 
 function on_input(self, action_id, action)
@@ -18,10 +41,12 @@ function on_input(self, action_id, action)
 	end
 	if tile then
 		local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
-		if tile_id == 2 then
+		if table_contains(self.placement_spots, tile) then
 			mouse_hovering_id = "board_tilemap"
 			if action_id == hash("LEFT_CLICK") and action.released then
-				print("clicked tile. selected unit: (", ingame_state.gui_selected_unit, ")")
+				if ingame_state.gui_selected_unit then
+					tilemap.set_tile(TILEMAP_URL, "board", tile.x, tile.y, unit_id_to_tile_index[ingame_state.gui_selected_unit])
+				end
 			end
 		elseif is_hovering_tilemap_id then
 			mouse_hovering_id = nil
