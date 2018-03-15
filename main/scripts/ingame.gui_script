@@ -87,3 +87,7 @@ function on_input(self, action_id, action)
 
 	buttons_on_input(self, action_id, action, on_click)
 end
+
+function final(self)
+	buttons_final(self)
+end

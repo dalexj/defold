@@ -5,6 +5,8 @@ local function general_init(self)
 	if not self.buttons_metadata then self.buttons_metadata = {} end
 	-- button states: NORMAL HOVER PRESSED
 	self.mouse_down = false
+	self.hover_color = vmath.vector4(0.7, 0.7, 0.7, 1)
+	self.pressed_color = vmath.vector4(0.3, 0.3, 0.3, 1)
 end
 
 function buttons_init(self, ids)
@@ -17,8 +19,6 @@ function buttons_init(self, ids)
 		}
 		self.buttons[button_id].default_color = gui.get_color(self.buttons[button_id].bg)
 	end
-	self.hover_color = vmath.vector4(0.7, 0.7, 0.7, 1)
-	self.pressed_color = vmath.vector4(0.3, 0.3, 0.3, 1)
 end
 
 function buttons_init_clone(self, proto_id, number_of_buttons, position_fn, text_fn)
@@ -78,4 +78,12 @@ function buttons_on_input(self, action_id, action, click_fn)
 	end
 
 	calculate_cursor()
+end
+
+function buttons_final(self)
+	for key, _ in pairs(self.buttons) do
+		if mouse_hovering_id == key then
+			mouse_hovering_id = nil
+		end
+	end
 end

@@ -34,3 +34,10 @@ function on_input(self, action_id, action)
 	end
 	calculate_cursor()
 end
+
+function final(self)
+	if mouse_hovering_id == "mouse_hovering_id" then
+		mouse_hovering_id = nil
+	end
+	calculate_cursor()
+end
