@@ -1,11 +1,18 @@
 require "main.modules.button"
+require "main.modules.ingame_state"
 
 local function reset_selected(self)
 	if self.selected_index then
 		gui.set_color(self.buttons[self.selected_index].bg, self.default_button_color)
 		self.buttons[self.selected_index].default_color = self.default_button_color
 		self.selected_index = nil
+		ingame_state.gui_selected_unit = nil
 	end
+end
+
+local function set_selected(self, selected)
+	self.selected_index = selected
+	ingame_state.gui_selected_unit = self.sorted_unit_names[selected:sub(-1) + (self.page * 5)]
 end
 
 local function update_page_buttons(self)
@@ -78,7 +85,7 @@ function on_input(self, action_id, action)
 			print("clicked (prev page). page now " .. self.page)
 		else
 			reset_selected(self)
-			self.selected_index = key
+			set_selected(self, key)
 			gui.set_color(self.buttons[key].bg, self.pressed_color)
 			self.buttons[key].default_color = self.pressed_color
 			print("clicked (" .. key .. ")")

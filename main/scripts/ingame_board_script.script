@@ -1,5 +1,6 @@
 require "main.modules.tilemap"
 require "main.modules.mouse_cursor"
+require "main.modules.ingame_state"
 
 local TILE_SIZE = 40
 local TILEMAP_URL = "/board#board"
@@ -19,17 +20,11 @@ function on_input(self, action_id, action)
 		local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
 		if tile_id == 2 then
 			mouse_hovering_id = "board_tilemap"
+			if action_id == hash("LEFT_CLICK") and action.released then
+				print("clicked tile. selected unit: (", ingame_state.gui_selected_unit, ")")
+			end
 		elseif is_hovering_tilemap_id then
 			mouse_hovering_id = nil
-		end
-	end
-	
-	if action_id == hash("LEFT_CLICK") and action.released then
-		
-		if tile then
-			print("tile clicked at (" .. tile.x .. "," .. tile.y .. ") with tile (" .. tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y) .. ")")
-		else
-			print("tilemap not clicked")
 		end
 	end
 	calculate_cursor()
