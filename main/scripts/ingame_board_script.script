@@ -1,16 +1,10 @@
 require "main.modules.tilemap"
 require "main.modules.mouse_cursor"
 require "main.modules.ingame_state"
+require "main.modules.unit_data"
 
 local TILE_SIZE = 40
 local TILEMAP_URL = "/board#board"
-
-local unit_id_to_tile_index = {
-	hack = 3,
-	battery = 4,
-	man = 5,
-	doc = 6,
-}
 
 local function table_contains(table, element)
 	for _, v in pairs(table) do
@@ -45,7 +39,7 @@ function on_input(self, action_id, action)
 			mouse_hovering_id = "board_tilemap"
 			if action_id == hash("LEFT_CLICK") and action.released then
 				if ingame_state.gui_selected_unit then
-					tilemap.set_tile(TILEMAP_URL, "board", tile.x, tile.y, unit_id_to_tile_index[ingame_state.gui_selected_unit])
+					tilemap.set_tile(TILEMAP_URL, "board", tile.x, tile.y, get_tile_index_from_unit_id(ingame_state.gui_selected_unit))
 				end
 			end
 		elseif is_hovering_tilemap_id then

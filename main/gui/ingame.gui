@@ -1277,9 +1277,7 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "health = 3\n"
-  "max_health = 3\n"
-  "move = 3"
+  text: ""
   font: "ubuntu"
   id: "unit_info"
   xanchor: XANCHOR_NONE

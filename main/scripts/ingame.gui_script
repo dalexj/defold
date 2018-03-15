@@ -1,5 +1,14 @@
 require "main.modules.button"
 require "main.modules.ingame_state"
+require "main.modules.unit_data"
+
+local function display_unit_info(self, info)
+	local text = ""
+	if info then
+		text = info.name .. "\nmax_hp = " .. info.max_hp .. "\nspeed = " .. info.moves
+	end
+	gui.set_text(self.unit_info_text, text)
+end
 
 local function reset_selected(self)
 	if self.selected_index then
@@ -7,12 +16,14 @@ local function reset_selected(self)
 		self.buttons[self.selected_index].default_color = self.default_button_color
 		self.selected_index = nil
 		ingame_state.gui_selected_unit = nil
+		display_unit_info(self, nil)
 	end
 end
 
 local function set_selected(self, selected)
 	self.selected_index = selected
 	ingame_state.gui_selected_unit = self.sorted_unit_names[selected:sub(-1) + (self.page * 5)]
+	display_unit_info(self, get_unit_default_stats(ingame_state.gui_selected_unit))
 end
 
 local function update_page_buttons(self)
@@ -48,6 +59,8 @@ function init(self)
 	self.page = 0
 	self.buttons.next_page = { bg = gui.get_node("next_page"), skip_effects = true }
 	self.buttons.prev_page = { bg = gui.get_node("prev_page"), skip_effects = true }
+
+	self.unit_info_text = gui.get_node("unit_info")
 
 	self.sorted_unit_names = {}
 	self.owned_units = {}
