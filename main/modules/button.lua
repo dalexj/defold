@@ -1,8 +1,9 @@
+require "main.modules.mouse_cursor"
+
 local function general_init(self)
 	if not self.buttons then self.buttons = {} end
 	if not self.buttons_metadata then self.buttons_metadata = {} end
 	-- button states: NORMAL HOVER PRESSED
-	self.cursor_is_hand = false
 	self.mouse_down = false
 end
 
@@ -48,12 +49,12 @@ function buttons_on_input(self, action_id, action, click_fn)
 		self.mouse_down = true
 	end
 
-	local hovering = false
 	for key, button in pairs(self.buttons) do
 		local new_state = "NORMAL"
+		
 		if gui.is_enabled(button.bg) and gui.pick_node(button.bg, action.x, action.y) then
 			-- mouse is inside this button
-			hovering = true
+			mouse_hovering_id = key
 			
 			new_state = self.mouse_down and "PRESSED" or "HOVER"
 			if action_id == hash("LEFT_CLICK") then
@@ -61,6 +62,8 @@ function buttons_on_input(self, action_id, action, click_fn)
 					click_fn(key)
 				end
 			end
+		elseif mouse_hovering_id == key then
+			mouse_hovering_id = nil
 		end
 
 		if not button.skip_effects and new_state ~= button.state then
@@ -74,8 +77,5 @@ function buttons_on_input(self, action_id, action, click_fn)
 		end
 	end
 
-	if hovering ~= self.cursor_is_hand then
-		defos.set_cursor(hovering and defos.CURSOR_HAND or nil)
-		self.cursor_is_hand = hovering
-	end
+	calculate_cursor()
 end

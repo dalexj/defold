@@ -85,5 +85,5 @@ function on_input(self, action_id, action)
 		end
 	end
 
-	--buttons_on_input(self, action_id, action, on_click)
+	buttons_on_input(self, action_id, action, on_click)
 end
