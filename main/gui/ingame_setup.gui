@@ -1,4 +1,4 @@
-script: "/main/scripts/ingame.gui_script"
+script: "/main/scripts/ingame_setup.gui_script"
 fonts {
   name: "ubuntu"
   font: "/main/fonts/ubuntu.font"
@@ -70,7 +70,7 @@ nodes {
 nodes {
   position {
     x: 120.0
-    y: 370.0
+    y: 77.0
     z: 0.0
     w: 1.0
   }
@@ -81,8 +81,8 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 1.0
-    y: 1.0
+    x: 0.75
+    y: 0.75
     z: 1.0
     w: 1.0
   }
@@ -99,7 +99,7 @@ nodes {
     w: 1.0
   }
   type: TYPE_TEMPLATE
-  id: "template"
+  id: "start_game_button"
   layer: ""
   inherit_alpha: true
   alpha: 1.0
@@ -140,12 +140,12 @@ nodes {
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
   texture: ""
-  id: "template/bg"
+  id: "start_game_button/bg"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
-  parent: "template"
+  parent: "start_game_button"
   layer: ""
   inherit_alpha: true
   slice9 {
@@ -194,10 +194,9 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "button\n"
-  ""
+  text: "Start"
   font: "ubuntu"
-  id: "template/text"
+  id: "start_game_button/text"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
@@ -215,12 +214,13 @@ nodes {
   }
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
-  parent: "template/bg"
+  parent: "start_game_button/bg"
   layer: ""
   inherit_alpha: true
   alpha: 1.0
   outline_alpha: 1.0
   shadow_alpha: 1.0
+  overridden_fields: 8
   template_node_child: true
   text_leading: 1.0
   text_tracking: 0.0
@@ -1247,7 +1247,7 @@ nodes {
 nodes {
   position {
     x: 40.0
-    y: 222.0
+    y: 362.0
     z: 0.0
     w: 1.0
   }
