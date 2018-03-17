@@ -7,6 +7,7 @@ local DEFAULT_TILE_INDEX = 1
 local PLACEMENT_TILE_INDEX = 2
 local MOVEMENT_OPTION_TILE_INDEX = 3
 local DIRECT_MOVEMENT_OPTION_TILE_INDEX = 4
+local SELECTED_TILE_INDEX = 9
 local TILE_SIZE = 40
 local TILEMAP_URL = "/board#board"
 
@@ -15,6 +16,42 @@ local function table_contains_tile(table, element)
 		if v.x == element.x and v.y == element.y then return true end
 	end
 	return false
+end
+
+local function clear_selected_tile(self)
+	if self.selected_tile then
+		tilemap.set_tile(TILEMAP_URL, "effects", self.selected_tile.x, self.selected_tile.y, 0)
+		self.selected_tile = nil
+	end
+end
+
+local function select_tile(self, tile)
+	clear_selected_tile(self)
+	tilemap.set_tile(TILEMAP_URL, "effects", tile.x, tile.y, SELECTED_TILE_INDEX)
+	self.selected_tile = tile
+end
+
+local function setup_phase_on_input(self, action_id, action, tile)
+	local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
+
+	if table_contains_tile(self.placement_spots, tile) then
+		mouse_hovering_id = "board_tilemap"
+		if action_id == hash("LEFT_CLICK") and action.released then
+			select_tile(self, tile)
+			if ingame_state.gui_selected_unit then
+				if not self.can_start then
+					msg.post("/ingame_setup_gui", "enable_start_button")
+					self.can_start = true
+				end
+				if place_unit(ingame_state.gui_selected_unit, tile_id) then
+					msg.post("/ingame_setup_gui", "update")
+					tilemap.set_tile(TILEMAP_URL, "board", tile.x, tile.y, get_tile_index_from_unit_id(ingame_state.gui_selected_unit))
+				end
+			end
+		end
+	elseif mouse_hovering_id == "board_tilemap" then
+		mouse_hovering_id = nil
+	end
 end
 
 function init(self)
@@ -30,6 +67,7 @@ function init(self)
 	end
 	self.can_start = false
 	self.setup_phase = true
+	self.selected_tile = nil
 end
 
 function on_message(self, message_id, message, sender)
@@ -62,26 +100,16 @@ end
 
 function on_input(self, action_id, action)
 	local tile = get_tile_within_coords(TILEMAP_URL, TILE_SIZE, action)
-	local is_hovering_tilemap_id = mouse_hovering_id == "board_tilemap"
 
-	if is_hovering_tilemap_id and tile == nil then
+	if mouse_hovering_id == "board_tilemap" and tile == nil then
 		mouse_hovering_id = nil
 	end
+
 	if tile then
-		local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
-		if table_contains_tile(self.placement_spots, tile) then
-			mouse_hovering_id = "board_tilemap"
-			if action_id == hash("LEFT_CLICK") and action.released then
-				if ingame_state.gui_selected_unit then
-					if not self.can_start then
-						msg.post("/ingame_setup_gui", "enable_start_button")
-						self.can_start = true
-					end
-					tilemap.set_tile(TILEMAP_URL, "board", tile.x, tile.y, get_tile_index_from_unit_id(ingame_state.gui_selected_unit))
-				end
-			end
-		elseif is_hovering_tilemap_id then
-			mouse_hovering_id = nil
+		if self.setup_phase then
+			setup_phase_on_input(self, action_id, action, tile)
+		else
+			playing_phase_on_input(self, action_id, action, tile)
 		end
 	end
 	calculate_cursor()

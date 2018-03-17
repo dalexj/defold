@@ -35,7 +35,8 @@ local function update_page_buttons(self)
 		else
 			gui.set_enabled(gui.get_node("unit_select_" .. i .. "/bg"), true)
 			local unit_name = self.sorted_unit_names[(self.page * 5) + i]
-			gui.set_text(text_node, unit_name .. "  x" .. self.owned_units[unit_name])
+			local number_of_units_left = ingame_state.owned_units[unit_name] - (ingame_state.placed_units[unit_name] or 0)
+			gui.set_text(text_node, unit_name .. "  x" .. number_of_units_left)
 		end
 	end
 	gui.set_enabled(self.buttons.prev_page.bg, self.page ~= 0)
@@ -65,7 +66,7 @@ function init(self)
 	self.unit_info_text = gui.get_node("unit_info")
 
 	self.sorted_unit_names = {}
-	self.owned_units = {}
+	ingame_state.owned_units = {}
 	update_page_buttons(self)
 	msg.post("main:/state", "get_player_data")
 end
@@ -77,14 +78,18 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("get_player_data") then
 		self.sorted_unit_names = {}
-		self.owned_units = message.owned_units
-		for unit_name, _ in pairs(self.owned_units) do
+		ingame_state.owned_units = message.owned_units
+		ingame_state.placed_units = {}
+		for unit_name, amount in pairs(message.owned_units) do
 			table.insert(self.sorted_unit_names, unit_name)
+			ingame_state.placed_units[unit_name] = 0
 		end
 		table.sort(self.sorted_unit_names)
 		update_page_buttons(self)
 	elseif message_id == hash("enable_start_button") then
 		gui.set_enabled(self.buttons.start_game_button.bg, true)
+	elseif message_id == hash("update") then
+		update_page_buttons(self)
 	end
 end
 
