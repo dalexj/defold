@@ -3,10 +3,14 @@ require "main.modules.mouse_cursor"
 require "main.modules.ingame_state"
 require "main.modules.unit_data"
 
+local DEFAULT_TILE_INDEX = 1
+local PLACEMENT_TILE_INDEX = 2
+local MOVEMENT_OPTION_TILE_INDEX = 3
+local DIRECT_MOVEMENT_OPTION_TILE_INDEX = 4
 local TILE_SIZE = 40
 local TILEMAP_URL = "/board#board"
 
-local function table_contains(table, element)
+local function table_contains_tile(table, element)
 	for _, v in pairs(table) do
 		if v.x == element.x and v.y == element.y then return true end
 	end
@@ -19,16 +23,39 @@ function init(self)
 	local _, _, width, height = tilemap.get_bounds(TILEMAP_URL)
 	for i = 1, width do
 		for j = 1, height do
-			if tilemap.get_tile(TILEMAP_URL, "board", i, j) == 2 then
+			if tilemap.get_tile(TILEMAP_URL, "board", i, j) == PLACEMENT_TILE_INDEX then
 				table.insert(self.placement_spots, { x = i, y = j })
 			end
 		end
 	end
 	self.can_start = false
+	self.setup_phase = true
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("start_game") then
+	if message_id == hash("start_game") and self.can_start then
+		self.player_units = {}
+		for _, spot in pairs(self.placement_spots) do
+			local tile_index = tilemap.get_tile(TILEMAP_URL, "board", spot.x, spot.y)
+			if tile_index == PLACEMENT_TILE_INDEX then
+				tilemap.set_tile(TILEMAP_URL, "board", spot.x, spot.y, DEFAULT_TILE_INDEX)
+			else
+				local unit_id = get_unit_id_from_tile_index(tile_index)
+				local default_stats = get_unit_default_stats(unit_id)
+				table.insert(self.player_units, {
+					id = unit_id,
+					tiles = {spot},
+					head = spot,
+					max_moves = default_stats.max_moves,
+					max_hp = default_stats.max_hp,
+					moves_made = 0,
+					attack_mode = false,
+					finished_turn = false,
+					attacks = default_stats.attacks,
+				})
+			end
+
+		end
 		print("game started")
 	end
 end
@@ -42,7 +69,7 @@ function on_input(self, action_id, action)
 	end
 	if tile then
 		local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
-		if table_contains(self.placement_spots, tile) then
+		if table_contains_tile(self.placement_spots, tile) then
 			mouse_hovering_id = "board_tilemap"
 			if action_id == hash("LEFT_CLICK") and action.released then
 				if ingame_state.gui_selected_unit then

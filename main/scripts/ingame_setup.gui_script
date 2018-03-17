@@ -5,7 +5,7 @@ require "main.modules.unit_data"
 local function display_unit_info(self, info)
 	local text = ""
 	if info then
-		text = info.name .. "\nmax_hp = " .. info.max_hp .. "\nspeed = " .. info.moves
+		text = info.name .. "\nmax_hp = " .. info.max_hp .. "\nspeed = " .. info.max_moves
 	end
 	gui.set_text(self.unit_info_text, text)
 end

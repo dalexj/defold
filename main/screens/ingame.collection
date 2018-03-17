@@ -39,7 +39,7 @@ embedded_instances {
   id: "board"
   data: "components {\n"
   "  id: \"board\"\n"
-  "  component: \"/main/tilemap.tilemap\"\n"
+  "  component: \"/main/tilemaps/board.tilemap\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"

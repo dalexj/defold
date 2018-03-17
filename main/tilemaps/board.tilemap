@@ -1,4 +1,4 @@
-tile_set: "/tilesource.tilesource"
+tile_set: "/main/tilemaps/board_tiles.tilesource"
 layers {
   id: "board"
   z: 0.0
@@ -1179,6 +1179,11 @@ layers {
     h_flip: 0
     v_flip: 0
   }
+}
+layers {
+  id: "effects"
+  z: 1.0
+  is_visible: 1
 }
 material: "/builtins/materials/tile_map.material"
 blend_mode: BLEND_MODE_ALPHA
