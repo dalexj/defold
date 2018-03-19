@@ -4,6 +4,8 @@ ingame_state = {
 	gui_selected_unit = nil,
 	placed_units = {},
 	owned_units = {},
+	board_selected_unit = nil,
+	gui_selected_attack = nil,
 }
 
 function place_unit(unit_id, previous_tile_id)

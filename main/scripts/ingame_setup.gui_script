@@ -29,14 +29,14 @@ end
 local function update_page_buttons(self)
 	local number_of_pages = math.ceil(#self.sorted_unit_names/5)
 	for i = 1, 5 do
-		local text_node = gui.get_node("unit_select_" .. i .. "/text")
+		local button = self.buttons["unit_select_" .. i]
 		if (self.page * 5 + i) > #self.sorted_unit_names then
-			gui.set_enabled(gui.get_node("unit_select_" .. i .. "/bg"), false)
+			gui.set_enabled(button.bg, false)
 		else
-			gui.set_enabled(gui.get_node("unit_select_" .. i .. "/bg"), true)
+			gui.set_enabled(button.bg, true)
 			local unit_name = self.sorted_unit_names[(self.page * 5) + i]
 			local number_of_units_left = ingame_state.owned_units[unit_name] - (ingame_state.placed_units[unit_name] or 0)
-			gui.set_text(text_node, unit_name .. "  x" .. number_of_units_left)
+			gui.set_text(button.text, unit_name .. "  x" .. number_of_units_left)
 		end
 	end
 	gui.set_enabled(self.buttons.prev_page.bg, self.page ~= 0)
@@ -56,7 +56,6 @@ function init(self)
 
 	self.hover_color = vmath.vector4(0.6, 0.6, 0.6, 1)
 	self.pressed_color = vmath.vector4(0.4, 0.4, 0.4, 1)
-	--self.default_button_color = vmath.vector4(0.10196078568697, 0.30196079611778, 0.30196079611778, 1)
 	self.default_button_color = vmath.vector4(26/255,77/255,77/255, 1)
 
 	self.page = 0

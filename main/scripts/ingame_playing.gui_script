@@ -1,4 +1,40 @@
 require "main.modules.button"
+require "main.modules.ingame_state"
+
+local NUMBER_OF_ATTACK_BUTTONS = 3
+
+local function update_attack_buttons(self)
+	for i = 1, NUMBER_OF_ATTACK_BUTTONS do
+		local button = self.buttons["attack_button_" .. i]
+		if ingame_state.board_selected_unit then
+			local attack = ingame_state.board_selected_unit.attacks[i]
+			if attack then
+				gui.set_enabled(button.bg, true)
+				gui.set_text(button.text, attack.name)
+			else
+				gui.set_enabled(button.bg, false)
+			end
+		else
+			gui.set_enabled(button.bg, false)
+		end
+	end
+end
+
+local function reset_selected(self)
+	if self.selected_index then
+		gui.set_color(self.buttons[self.selected_index].bg, self.default_button_color)
+		self.buttons[self.selected_index].default_color = self.default_button_color
+		self.selected_index = nil
+		ingame_state.gui_selected_attack = nil
+		display_unit_info(self, nil)
+	end
+end
+
+local function set_selected(self, selected)
+	self.selected_index = selected
+	ingame_state.gui_selected_attack = self.sorted_unit_names[selected:sub(-1) + (self.page * 5)]
+	display_unit_info(self, get_unit_default_stats(ingame_state.gui_selected_attack))
+end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -7,7 +43,11 @@ function init(self)
 	for i = 1, 3 do
 		table.insert(button_names, "attack_button_" .. i)
 	end
+	self.hover_color = vmath.vector4(0.6, 0.6, 0.6, 1)
+	self.pressed_color = vmath.vector4(0.4, 0.4, 0.4, 1)
+	self.default_button_color = vmath.vector4(26/255,77/255,77/255, 1)
 	buttons_init(self, button_names)
+	update_attack_buttons(self)
 end
 
 function on_input(self, action_id, action)
@@ -15,6 +55,10 @@ function on_input(self, action_id, action)
 		print("clicked on (" .. key .. ")")
 	end
 	buttons_on_input(self, action_id, action, click_fn)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("update_attack_buttons")
 end
 
 function final(self)

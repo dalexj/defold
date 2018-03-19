@@ -28,13 +28,13 @@ nodes {
   }
   scale {
     x: 1.0
-    y: 6.897
+    y: 1.0
     z: 2.152
     w: 1.0
   }
   size {
     x: 200.0
-    y: 100.0
+    y: 680.0
     z: 0.0
     w: 1.0
   }
@@ -65,7 +65,7 @@ nodes {
   clipping_inverted: false
   alpha: 1.0
   template_node_child: false
-  size_mode: SIZE_MODE_AUTO
+  size_mode: SIZE_MODE_MANUAL
 }
 nodes {
   position {
