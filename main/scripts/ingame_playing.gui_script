@@ -1,3 +1,22 @@
+require "main.modules.button"
+
 function init(self)
+	msg.post(".", "acquire_input_focus")
 	msg.post("/ingame_playing_gui", "disable")
+	local button_names = {}
+	for i = 1, 3 do
+		table.insert(button_names, "attack_button_" .. i)
+	end
+	buttons_init(self, button_names)
+end
+
+function on_input(self, action_id, action)
+	local function click_fn(key)
+		print("clicked on (" .. key .. ")")
+	end
+	buttons_on_input(self, action_id, action, click_fn)
+end
+
+function final(self)
+	buttons_final(self)
 end
