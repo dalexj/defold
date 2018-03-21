@@ -20,20 +20,26 @@ local function update_attack_buttons(self)
 	end
 end
 
+local function display_attack_info(self, selected)
+	if false then
+		gui.set_text(self.text_node, selected)
+	end
+end
+
 local function reset_selected(self)
 	if self.selected_index then
 		gui.set_color(self.buttons[self.selected_index].bg, self.default_button_color)
 		self.buttons[self.selected_index].default_color = self.default_button_color
 		self.selected_index = nil
 		ingame_state.gui_selected_attack = nil
-		display_unit_info(self, nil)
+		display_attack_info(self, nil)
 	end
 end
 
 local function set_selected(self, selected)
 	self.selected_index = selected
-	ingame_state.gui_selected_attack = self.sorted_unit_names[selected:sub(-1) + (self.page * 5)]
-	display_unit_info(self, get_unit_default_stats(ingame_state.gui_selected_attack))
+	ingame_state.gui_selected_attack = ingame_state.board_selected_unit.attacks[selected:sub(-1)]
+	display_attack_info(self, get_unit_default_stats(ingame_state.gui_selected_attack))
 end
 
 function init(self)
@@ -52,13 +58,23 @@ end
 
 function on_input(self, action_id, action)
 	local function click_fn(key)
-		print("clicked on (" .. key .. ")")
+		if key == "something" then
+		else
+			reset_selected(self)
+			set_selected(self, key)
+			gui.set_color(self.buttons[key].bg, self.pressed_color)
+			self.buttons[key].default_color = self.pressed_color
+			print("clicked (" .. key .. ")")
+		end
+
 	end
 	buttons_on_input(self, action_id, action, click_fn)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("update_attack_buttons")
+	if message_id == hash("update") then
+		update_attack_buttons(self)
+	end
 end
 
 function final(self)
