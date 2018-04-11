@@ -15,7 +15,8 @@ function buttons_init(self, ids)
 		self.buttons[button_id] = {
 			bg = gui.get_node(button_id .. "/bg"),
 			skip_effects = false,
-			state = "NORMAL"
+			state = "NORMAL",
+			text = gui.get_node(button_id .. "/text")
 		}
 		self.buttons[button_id].default_color = gui.get_color(self.buttons[button_id].bg)
 	end
@@ -41,7 +42,7 @@ function buttons_init_clone(self, proto_id, number_of_buttons, position_fn, text
 end
 
 function buttons_on_input(self, action_id, action, click_fn)
-	
+
 	if action_id == hash("LEFT_CLICK") and action.released then
 		self.mouse_down = false
 	end
@@ -51,11 +52,11 @@ function buttons_on_input(self, action_id, action, click_fn)
 
 	for key, button in pairs(self.buttons) do
 		local new_state = "NORMAL"
-		
+
 		if gui.is_enabled(button.bg) and gui.pick_node(button.bg, action.x, action.y) then
 			-- mouse is inside this button
 			mouse_hovering_id = key
-			
+
 			new_state = self.mouse_down and "PRESSED" or "HOVER"
 			if action_id == hash("LEFT_CLICK") then
 				if action.released == true then

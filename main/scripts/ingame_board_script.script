@@ -54,6 +54,12 @@ local function setup_phase_on_input(self, action_id, action, tile)
 	end
 end
 
+local function playing_phase_on_input(self, action_id, action, tile)
+	local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
+
+
+end
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	self.placement_spots = {}
@@ -95,6 +101,7 @@ function on_message(self, message_id, message, sender)
 
 		end
 		print("game started")
+		self.setup_phase = false
 	end
 end
 
