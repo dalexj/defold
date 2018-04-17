@@ -10,9 +10,12 @@ local DIRECT_MOVEMENT_OPTION_TILE_INDEX = 4
 local SELECTED_TILE_INDEX = 9
 local TILE_SIZE = 40
 local TILEMAP_URL = "/board#board"
+local EFFECTS_LAYER = "effects"
+local BOARD_LAYER = "board"
 
-local function table_contains_tile(table, element)
+local function table_contains_tile(table, element, key_to_lookup)
 	for _, v in pairs(table) do
+		if key_to_lookup then v = v[key_to_lookup] end
 		if v.x == element.x and v.y == element.y then return true end
 	end
 	return false
@@ -20,21 +23,21 @@ end
 
 local function clear_selected_tile(self)
 	if self.selected_tile then
-		tilemap.set_tile(TILEMAP_URL, "effects", self.selected_tile.x, self.selected_tile.y, 0)
+		tilemap.set_tile(TILEMAP_URL, EFFECTS_LAYER, self.selected_tile.x, self.selected_tile.y, 0)
 		self.selected_tile = nil
 	end
 end
 
 local function select_tile(self, tile)
 	clear_selected_tile(self)
-	tilemap.set_tile(TILEMAP_URL, "effects", tile.x, tile.y, SELECTED_TILE_INDEX)
+	tilemap.set_tile(TILEMAP_URL, EFFECTS_LAYER, tile.x, tile.y, SELECTED_TILE_INDEX)
 	self.selected_tile = tile
 end
 
 local function setup_phase_on_input(self, action_id, action, tile)
-	local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
+	local tile_id = tilemap.get_tile(TILEMAP_URL, BOARD_LAYER, tile.x, tile.y)
 
-	if table_contains_tile(self.placement_spots, tile) then
+	if table_contains_tile(self.placement_spots, tile, nil) then
 		mouse_hovering_id = "board_tilemap"
 		if action_id == hash("LEFT_CLICK") and action.released then
 			select_tile(self, tile)
@@ -45,7 +48,7 @@ local function setup_phase_on_input(self, action_id, action, tile)
 				end
 				if place_unit(ingame_state.gui_selected_unit, tile_id) then
 					msg.post("/ingame_setup_gui", "update")
-					tilemap.set_tile(TILEMAP_URL, "board", tile.x, tile.y, get_tile_index_from_unit_id(ingame_state.gui_selected_unit))
+					tilemap.set_tile(TILEMAP_URL, BOARD_LAYER, tile.x, tile.y, get_tile_index_from_unit_id(ingame_state.gui_selected_unit))
 				end
 			end
 		end
@@ -55,7 +58,23 @@ local function setup_phase_on_input(self, action_id, action, tile)
 end
 
 local function playing_phase_on_input(self, action_id, action, tile)
-	local tile_id = tilemap.get_tile(TILEMAP_URL, "board", tile.x, tile.y)
+	local tile_id = tilemap.get_tile(TILEMAP_URL, BOARD_LAYER, tile.x, tile.y)
+
+	local mouse_over_unit = nil
+	for _, unit in self.player_units do
+		if unit.head.x == tile.x and unit.head.y == tile.y then
+			mouse_over_unit = unit
+		end
+	end
+
+	if mouse_over_unit then
+		mouse_hovering_id = "board_tilemap"
+		if action_id == hash("LEFT_CLICK") and action.released then
+			select_tile(self, tile)
+			ingame_state.board_selected_unit = mouse_over_unit
+			msg.post("/ingame_playing_gui", "update")
+		end
+	end
 
 
 end
@@ -66,7 +85,7 @@ function init(self)
 	local _, _, width, height = tilemap.get_bounds(TILEMAP_URL)
 	for i = 1, width do
 		for j = 1, height do
-			if tilemap.get_tile(TILEMAP_URL, "board", i, j) == PLACEMENT_TILE_INDEX then
+			if tilemap.get_tile(TILEMAP_URL, BOARD_LAYER, i, j) == PLACEMENT_TILE_INDEX then
 				table.insert(self.placement_spots, { x = i, y = j })
 			end
 		end
@@ -79,10 +98,11 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("start_game") and self.can_start then
 		self.player_units = {}
+		clear_selected_tile(self)
 		for _, spot in pairs(self.placement_spots) do
-			local tile_index = tilemap.get_tile(TILEMAP_URL, "board", spot.x, spot.y)
+			local tile_index = tilemap.get_tile(TILEMAP_URL, BOARD_LAYER, spot.x, spot.y)
 			if tile_index == PLACEMENT_TILE_INDEX then
-				tilemap.set_tile(TILEMAP_URL, "board", spot.x, spot.y, DEFAULT_TILE_INDEX)
+				tilemap.set_tile(TILEMAP_URL, BOARD_LAYER, spot.x, spot.y, DEFAULT_TILE_INDEX)
 			else
 				local unit_id = get_unit_id_from_tile_index(tile_index)
 				local default_stats = get_unit_default_stats(unit_id)
