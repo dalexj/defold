@@ -2,6 +2,7 @@ require "main.modules.tilemap"
 require "main.modules.mouse_cursor"
 require "main.modules.ingame_state"
 require "main.modules.unit_data"
+local board = require "main.modules.board"
 
 local DEFAULT_TILE_INDEX = 1
 local PLACEMENT_TILE_INDEX = 2
@@ -19,6 +20,21 @@ local function table_contains_tile(table, element, key_to_lookup)
 		if v.x == element.x and v.y == element.y then return true end
 	end
 	return false
+end
+
+local function draw_movement_effects(self)
+	table.insert(self.player_units, {
+		id = unit_id,
+		tiles = {spot},
+		head = spot,
+		max_moves = default_stats.max_moves,
+		max_hp = default_stats.max_hp,
+		moves_made = 0,
+		attack_mode = false,
+		finished_turn = false,
+		attacks = default_stats.attacks,
+	})
+	ingame_state.board_selected_unit
 end
 
 local function clear_selected_tile(self)
@@ -72,10 +88,10 @@ local function playing_phase_on_input(self, action_id, action, tile)
 		if action_id == hash("LEFT_CLICK") and action.released then
 			select_tile(self, tile)
 			ingame_state.board_selected_unit = mouse_over_unit
+			draw_movement_effects(self)
 			msg.post("/ingame_playing_gui", "update")
 		end
 	end
-
 
 end
 
